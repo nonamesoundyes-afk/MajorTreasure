@@ -1,0 +1,76 @@
+# ===== Сокровище Мажора =====
+world: world
+
+center:
+  x: 0
+  z: 0
+  # auto = высота поверхности определится один раз и запомнится (data.yml).
+  # Можно указать число - это Y поверхности земли в центре.
+  y: auto
+
+structure:
+  build-on-start: true   # построить метеоритный кратер при первом запуске
+  radius: 14             # радиус кратера
+  depth: 6               # глубина кратера
+  protect: true          # защита зоны (ломать/ставить может только majortreasure.admin)
+  forceload-chunks: true # держать чанки ивента загруженными
+
+refresh:
+  min-minutes: 30
+  max-minutes: 60
+
+coins:
+  enabled: true
+  value: 0.5             # сколько eco за 1 монету
+  per-second: 1          # сколько монет падает каждую секунду
+  spawn-radius: 6        # радиус падения вокруг сокровища
+  spawn-height: 12       # высота появления над шалкером
+  lifetime-seconds: 60   # через сколько секунд монета пропадёт, если её не взяли
+  active-radius: 64      # монеты падают, только если рядом есть игрок
+
+messages:
+  refresh-broadcast: "<gradient:#FFD700:#FFA500><bold>✦ Сокровище Мажора ✦</bold></gradient> <yellow>обновилось! Ищи на координатах <white>{x} {y} {z}</white>"
+  next: "<yellow>Следующее обновление Сокровища Мажора через <white>{time}"
+  coin: "<gold>+{amount} <yellow>монет"
+  holo-title: "<gradient:#FFD700:#FF8C00><bold>✦ Сокровище Мажора ✦</bold></gradient>"
+  holo-timer: "<gray>Обновление через: <yellow>{time}"
+  shulker-title: "<!italic><gold><bold>Сокровище Мажора"
+  no-permission: "<red>У тебя нет прав."
+  ok: "<green>Готово."
+  usage: "<yellow>/mt [time|refresh|build|reload]"
+
+# ===== Лут шалкера =====
+# За обновление: все guaranteed + от rolls-min до rolls-max случайных предметов из pool
+# (без повторов, по весам weight). Название поддерживает MiniMessage.
+loot:
+  rolls-min: 7
+  rolls-max: 11
+  guaranteed:
+    - { material: GOLD_INGOT, min: 12, max: 24 }
+    - { material: EXPERIENCE_BOTTLE, min: 8, max: 16 }
+  pool:
+    - { material: GOLD_INGOT, min: 16, max: 40, weight: 18 }
+    - { material: GOLD_BLOCK, min: 1, max: 3, weight: 8 }
+    - { material: DIAMOND, min: 2, max: 5, weight: 14 }
+    - { material: EMERALD, min: 8, max: 20, weight: 12 }
+    - { material: IRON_INGOT, min: 16, max: 40, weight: 10 }
+    - { material: NETHERITE_SCRAP, min: 1, max: 2, weight: 6 }
+    - { material: NETHERITE_INGOT, min: 1, max: 1, weight: 1 }
+    - { material: GOLDEN_APPLE, min: 2, max: 4, weight: 10 }
+    - { material: ENCHANTED_GOLDEN_APPLE, min: 1, max: 1, weight: 1 }
+    - { material: EXPERIENCE_BOTTLE, min: 16, max: 40, weight: 10 }
+    - { material: ENDER_PEARL, min: 4, max: 10, weight: 8 }
+    - { material: TOTEM_OF_UNDYING, min: 1, max: 1, weight: 3 }
+    - { material: COOKED_BEEF, min: 16, max: 32, weight: 8 }
+    - { material: GOLDEN_CARROT, min: 16, max: 32, weight: 6 }
+    - { material: OBSIDIAN, min: 8, max: 16, weight: 5 }
+    - { material: ANCIENT_DEBRIS, min: 1, max: 3, weight: 4 }
+    - { material: ENCHANTED_BOOK, min: 1, max: 1, weight: 3, enchants: { mending: 1 } }
+    - { material: ENCHANTED_BOOK, min: 1, max: 1, weight: 6, enchants: { unbreaking: 3 } }
+    - { material: ENCHANTED_BOOK, min: 1, max: 1, weight: 4, enchants: { fortune: 3 } }
+    - { material: ENCHANTED_BOOK, min: 1, max: 1, weight: 4, enchants: { efficiency: 5 } }
+    - { material: ENCHANTED_BOOK, min: 1, max: 1, weight: 4, enchants: { sharpness: 5 } }
+    - { material: ENCHANTED_BOOK, min: 1, max: 1, weight: 4, enchants: { protection: 4 } }
+    - { material: DIAMOND_PICKAXE, min: 1, max: 1, weight: 3, name: "<gold>Кирка Мажора", enchants: { efficiency: 4, unbreaking: 3 } }
+    - { material: DIAMOND_SWORD, min: 1, max: 1, weight: 3, name: "<gold>Меч Мажора", enchants: { sharpness: 4, unbreaking: 3 } }
+    - { material: DIAMOND_CHESTPLATE, min: 1, max: 1, weight: 2, name: "<gold>Кираса Мажора", enchants: { protection: 3, unbreaking: 3 } }

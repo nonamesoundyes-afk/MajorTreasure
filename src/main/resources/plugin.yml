@@ -1,0 +1,16 @@
+name: MajorTreasure
+version: 1.0.0
+main: dev.major.treasure.MajorTreasurePlugin
+api-version: '1.21'
+author: Major
+description: Ивент "Сокровище Мажора"
+depend: [Vault]
+commands:
+  majortreasure:
+    description: Сокровище Мажора
+    usage: /<command> [time|refresh|build|reload]
+    aliases: [mt, major]
+permissions:
+  majortreasure.admin:
+    description: Управление ивентом и строительство в зоне
+    default: op
