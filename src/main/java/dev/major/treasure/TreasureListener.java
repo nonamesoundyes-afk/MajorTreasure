@@ -1,9 +1,11 @@
 package dev.major.treasure;
 
-import com.destroystokyo.paper.event.player.PlayerAttemptPickupItemEvent;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,6 +14,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -30,6 +33,8 @@ public final class TreasureListener implements Listener {
 
     public TreasureListener(MajorTreasurePlugin plugin) {
         this.plugin = plugin;
+        // подбор монет рядом с игроком (работает даже при полном инвентаре)
+        plugin.getServer().getScheduler().runTaskTimer(plugin, this::scanCoins, 20L, 5L);
     }
 
     // ---------------------------------------------------------- coins
@@ -39,26 +44,44 @@ public final class TreasureListener implements Listener {
         return st.getItemMeta().getPersistentDataContainer().get(plugin.coinKey(), PersistentDataType.DOUBLE);
     }
 
-    @EventHandler
-    public void onPickup(PlayerAttemptPickupItemEvent e) {
-        Item item = e.getItem();
+    private void collect(Player p, Item item) {
+        if (!item.isValid()) return;
         ItemStack st = item.getItemStack();
         Double v = coinValue(st);
         if (v == null) return;
 
-        e.setCancelled(true);
         Economy eco = plugin.economy();
         if (eco == null) return;
 
         double total = v * st.getAmount();
         item.remove();
-        Player p = e.getPlayer();
         eco.depositPlayer(p, total);
 
         String amount = String.format(Locale.US, "%.1f", total);
         String m = plugin.getConfig().getString("messages.coin", "<gold>+{amount} монет");
         p.sendActionBar(plugin.mm().deserialize(m.replace("{amount}", amount)));
         p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.6f, 1.4f);
+    }
+
+    private void scanCoins() {
+        World w = plugin.world();
+        if (w == null) return;
+        for (Player p : w.getPlayers()) {
+            if (p.getGameMode() == GameMode.SPECTATOR || p.isDead()) continue;
+            if (!plugin.inZone(p.getLocation())) continue;
+            for (Entity en : p.getNearbyEntities(1.5, 1.5, 1.5)) {
+                if (en instanceof Item it && it.getPickupDelay() <= 0 && coinValue(it.getItemStack()) != null) {
+                    collect(p, it);
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPickup(EntityPickupItemEvent e) {
+        if (coinValue(e.getItem().getItemStack()) == null) return;
+        e.setCancelled(true);
+        if (e.getEntity() instanceof Player p) collect(p, e.getItem());
     }
 
     @EventHandler
